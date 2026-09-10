@@ -46,7 +46,8 @@ app.get('/', (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', async () => {
+
   console.log(`=======================================================`);
   console.log(`🚀 Skill Bridge-Ai Backend API running on http://localhost:${PORT}`);
 

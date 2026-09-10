@@ -57,18 +57,36 @@ export async function checkDatabaseHealth() {
   }
 }
 
+async function parseResponse(res, defaultMsg = 'Request failed') {
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || defaultMsg);
+    }
+    return data;
+  }
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`Server returned error (${res.status}): ${text.substring(0, 100) || 'Service unavailable'}`);
+  }
+  return { success: true };
+}
+
 // 2. Authentication APIs
 export async function registerUser(userData) {
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData)
-  });
-
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.error || 'Registration failed');
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+  } catch (netErr) {
+    throw new Error('Cannot connect to backend server. Please check that the server is running on port 5000.');
   }
+
+  const data = await parseResponse(res, 'Registration failed');
 
   if (data.token) {
     setToken(data.token);
@@ -78,16 +96,18 @@ export async function registerUser(userData) {
 }
 
 export async function loginUser(email, password) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.error || 'Login failed');
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+  } catch (netErr) {
+    throw new Error('Cannot connect to backend server. Please check that the server is running on port 5000.');
   }
+
+  const data = await parseResponse(res, 'Login failed');
 
   if (data.token) {
     setToken(data.token);
@@ -95,6 +115,7 @@ export async function loginUser(email, password) {
 
   return data;
 }
+
 
 export async function fetchCurrentUser() {
   const token = getToken();

@@ -35,6 +35,9 @@ export function LearnerDashboard({
   const cadre = persona?.job_role || persona?.cadre || 'Official Statistical Service';
   const posting = persona?.posting || persona?.organization || 'MoSPI, New Delhi';
   const currentAssignment = persona?.currentAssignment || persona?.career_goal || 'Capacity Building & Official Statistics Modernization';
+  const learningHours = persona?.learning_hours ?? persona?.learningHours ?? 0;
+  const karmayogiCredits = persona?.karmayogi_credits ?? persona?.karmayogiCredits ?? 0;
+
 
   return (
     <div className="learner-dashboard">
@@ -79,7 +82,7 @@ export function LearnerDashboard({
               <span className="gauge-caption">Readiness</span>
             </div>
           </div>
-          <div className="gauge-subtext">Benchmark for {persona.targetRole.toUpperCase()}</div>
+          <div className="gauge-subtext">Benchmark for {targetRole.toUpperCase()}</div>
         </div>
       </div>
 
@@ -108,7 +111,7 @@ export function LearnerDashboard({
             </div>
           </div>
           <div className="stat-value">{Object.values(enrollments || {}).filter(e => e.status === 'completed').length + 3} Courses</div>
-          <div className="stat-sub">{persona.learningHours} Verified Learning Hours</div>
+          <div className="stat-sub">{learningHours} Verified Learning Hours</div>
           <button className="stat-link-btn" onClick={() => onNavigateTab('pathway')}>
             <span>Browse iGOT Catalog</span>
             <ChevronRight size={14} />
@@ -122,13 +125,14 @@ export function LearnerDashboard({
               <Award size={18} />
             </div>
           </div>
-          <div className="stat-value">{persona.karmayogiCredits} pts</div>
-          <div className="stat-sub">Top 15% in {persona.cadre.split('(')[0]}</div>
+          <div className="stat-value">{karmayogiCredits} pts</div>
+          <div className="stat-sub">Top 15% in {cadre.split('(')[0]}</div>
           <button className="stat-link-btn" onClick={() => onNavigateTab('pathway')}>
             <span>Earn Credits</span>
             <ChevronRight size={14} />
           </button>
         </div>
+
 
         <div className="stat-card glass-card">
           <div className="stat-header">
@@ -183,8 +187,9 @@ export function LearnerDashboard({
           <div className="card-heading-row">
             <div>
               <h3>Competency Domain Readiness</h3>
-              <p>Current proficiency vs. MoSPI benchmark for {persona.targetRole.toUpperCase()}</p>
+              <p>Current proficiency vs. MoSPI benchmark for {targetRole.toUpperCase()}</p>
             </div>
+
             <button className="btn-secondary btn-sm" onClick={() => onNavigateTab('profile')}>
               Full Radar
             </button>
