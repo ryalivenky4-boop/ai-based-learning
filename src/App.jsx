@@ -156,38 +156,66 @@ export default function App() {
         if (isMounted) setDbStatus(health);
 
         const token = getToken();
-        if (token) {
-          const profileData = await fetchCurrentUser();
-          if (profileData && profileData.user && isMounted) {
-            setCurrentUser(profileData.user);
-            setUserSkills(profileData.skills || []);
-            setDbGaps(profileData.competencyGaps || []);
+        let user = null;
+        let skills = [];
+        let gaps = [];
 
-            const persona = buildOfficerPersona(profileData.user, profileData.skills);
+        if (token) {
+          try {
+            const profileData = await fetchCurrentUser();
+            if (profileData && profileData.user) {
+              user = profileData.user;
+              skills = profileData.skills || [];
+              gaps = profileData.competencyGaps || [];
+            }
+          } catch (e) {
+            console.warn('API fetchCurrentUser notice:', e.message);
+          }
+
+          // Fallback to local active user if backend user unavailable
+          if (!user) {
+            try {
+              const localUser = JSON.parse(localStorage.getItem('sb_active_user') || 'null');
+              if (localUser) {
+                user = localUser;
+                skills = localUser.skills || [];
+                gaps = localUser.competencyGaps || [];
+              }
+            } catch (e) {}
+          }
+
+          if (user && isMounted) {
+            setCurrentUser(user);
+            setUserSkills(skills);
+            setDbGaps(gaps);
+
+            const persona = buildOfficerPersona(user, skills);
             setCurrentPersona(persona);
 
-            const [progressRows, recRows] = await Promise.all([
-              fetchCourseProgress(),
-              fetchPersonalizedRecommendations()
-            ]);
+            try {
+              const [progressRows, recRows] = await Promise.all([
+                fetchCourseProgress(),
+                fetchPersonalizedRecommendations()
+              ]);
 
-            if (isMounted) {
-              setDbRecommendations(recRows);
-              const enrollMap = {};
-              progressRows.forEach(p => {
-                enrollMap[p.course_id] = {
-                  course_id: p.course_id,
-                  progress: p.progress_percentage,
-                  status: p.progress_percentage >= 100 ? 'completed' : 'in_progress'
-                };
-              });
-              setEnrollments(enrollMap);
-            }
-          } else {
+              if (isMounted) {
+                setDbRecommendations(recRows || []);
+                const enrollMap = {};
+                (progressRows || []).forEach(p => {
+                  enrollMap[p.course_id] = {
+                    course_id: p.course_id,
+                    progress: p.progress_percentage,
+                    status: p.progress_percentage >= 100 ? 'completed' : 'in_progress'
+                  };
+                });
+                setEnrollments(enrollMap);
+              }
+            } catch (err) {}
+          } else if (isMounted) {
             setCurrentUser(null);
             setCurrentPersona(null);
           }
-        } else {
+        } else if (isMounted) {
           setCurrentUser(null);
           setCurrentPersona(null);
         }
@@ -206,17 +234,9 @@ export default function App() {
       if (isMounted) setDbStatus(health);
     }, 12000);
 
-    const handleAuthExpired = () => {
-      setCurrentUser(null);
-      setCurrentPersona(null);
-      navigate('/login');
-    };
-    window.addEventListener('samarth_auth_expired', handleAuthExpired);
-
     return () => {
       isMounted = false;
       clearInterval(interval);
-      window.removeEventListener('samarth_auth_expired', handleAuthExpired);
     };
   }, [navigate]);
 

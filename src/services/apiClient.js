@@ -41,12 +41,6 @@ async function authFetch(url, options = {}) {
     headers
   });
 
-  if (res.status === 401) {
-    clearToken();
-    window.dispatchEvent(new Event('samarth_auth_expired'));
-    throw new Error('Session expired. Please log in again.');
-  }
-
   return res;
 }
 
