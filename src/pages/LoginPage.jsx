@@ -37,11 +37,6 @@ export default function LoginPage({ onLoginSuccess }) {
     }
   };
 
-  const handleQuickFill = () => {
-    setEmail('venkatesh.kumar@mospi.gov.in');
-    setPassword('Password@123');
-    setError(null);
-  };
 
   return (
     <div className="login-page-container">
@@ -184,13 +179,7 @@ export default function LoginPage({ onLoginSuccess }) {
                 </div>
               </div>
 
-              {/* Sample Quickfill button for convenience */}
-              <div className="quickfill-row">
-                <span className="text-muted-xs">Testing credentials:</span>
-                <button type="button" onClick={handleQuickFill} className="btn-quickfill">
-                  Fill Verified Officer Account
-                </button>
-              </div>
+
 
               <button
                 type="submit"

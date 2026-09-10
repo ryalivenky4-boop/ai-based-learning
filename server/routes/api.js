@@ -15,11 +15,12 @@ router.get('/db-status', async (req, res) => {
       });
     }
 
-    // Query stats from MySQL
-    const [traineeCount] = await pool.query('SELECT COUNT(*) as count FROM trainees');
-    const [compCount] = await pool.query('SELECT COUNT(*) as count FROM trainee_competencies');
-    const [quizCount] = await pool.query('SELECT COUNT(*) as count FROM quiz_submissions');
-    const [enrollCount] = await pool.query('SELECT COUNT(*) as count FROM course_enrollments');
+    // Query stats from active MySQL tables
+    const [userCount] = await pool.query('SELECT COUNT(*) as count FROM users');
+    const [skillCount] = await pool.query('SELECT COUNT(*) as count FROM user_skills');
+    const [courseCount] = await pool.query('SELECT COUNT(*) as count FROM courses');
+    const [quizCount] = await pool.query('SELECT COUNT(*) as count FROM quizzes');
+    const [progressCount] = await pool.query('SELECT COUNT(*) as count FROM course_progress');
 
     res.json({
       connected: true,
@@ -29,10 +30,11 @@ router.get('/db-status', async (req, res) => {
       port: connInfo.port,
       user: connInfo.user,
       stats: {
-        trainees: traineeCount[0].count,
-        competencyRecords: compCount[0].count,
-        quizSubmissions: quizCount[0].count,
-        courseEnrollments: enrollCount[0].count
+        users: userCount[0].count,
+        userSkills: skillCount[0].count,
+        courses: courseCount[0].count,
+        quizzes: quizCount[0].count,
+        courseProgress: progressCount[0].count
       }
     });
   } catch (err) {

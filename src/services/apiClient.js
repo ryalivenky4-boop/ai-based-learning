@@ -88,10 +88,7 @@ export async function registerUser(userData) {
 
   const data = await parseResponse(res, 'Registration failed');
 
-  if (data.token) {
-    setToken(data.token);
-  }
-
+  // Do not set token prematurely in localStorage so the user logs in through the login page
   return data;
 }
 
