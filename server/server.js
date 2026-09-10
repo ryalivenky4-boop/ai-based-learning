@@ -4,6 +4,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import apiRouter from './routes/api.js';
+import authRouter from './routes/auth.js';
+import skillsRouter from './routes/skills.js';
+import coursesRouter from './routes/courses.js';
+import materialsRouter from './routes/materials.js';
+import quizzesRouter from './routes/quizzes.js';
 import { testConnection } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +28,11 @@ app.use(cors({
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', authRouter);
+app.use('/api/skills', skillsRouter);
+app.use('/api/courses', coursesRouter);
+app.use('/api/materials', materialsRouter);
+app.use('/api/quizzes', quizzesRouter);
 app.use('/api', apiRouter);
 
 // Root healthcheck

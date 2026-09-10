@@ -13,6 +13,13 @@ import {
 } from 'lucide-react';
 
 export function Sidebar({ activeTab, onSelectTab, currentPersona, gapSummary }) {
+  const name = currentPersona?.full_name || currentPersona?.name || 'MoSPI Officer';
+  const division = currentPersona?.department || currentPersona?.division || 'Official Statistics Division';
+  const cadre = currentPersona?.job_role || currentPersona?.cadre || 'Statistical Service';
+  const learningHours = currentPersona?.learning_hours ?? currentPersona?.learningHours ?? 0;
+  const streakDays = currentPersona?.streak_days ?? currentPersona?.streakDays ?? 1;
+  const karmayogiCredits = currentPersona?.karmayogi_credits ?? currentPersona?.karmayogiCredits ?? 0;
+
   const navItems = [
     {
       id: 'dashboard',
@@ -68,31 +75,32 @@ export function Sidebar({ activeTab, onSelectTab, currentPersona, gapSummary }) 
       {/* Officer Quick Badge */}
       <div className="sidebar-profile-card glass-card">
         <div className="card-top">
-          <div className="cadre-pill">{currentPersona.cadre.split('(')[0]}</div>
+          <div className="cadre-pill">{cadre.split('(')[0]}</div>
           <div className="online-pill">
             <span className="pulse-indicator" />
             <span>Active</span>
           </div>
         </div>
-        <div className="officer-name">{currentPersona.name}</div>
-        <div className="officer-division">{currentPersona.division}</div>
+        <div className="officer-name">{name}</div>
+        <div className="officer-division">{division}</div>
 
         {/* Quick Micro Stats */}
         <div className="quick-micro-stats">
           <div className="micro-stat" title="Total completed learning hours">
             <Clock size={13} color="#FF8547" />
-            <span>{currentPersona.learningHours}h</span>
+            <span>{learningHours}h</span>
           </div>
           <div className="micro-stat" title="Karmayogi daily streak">
             <Flame size={13} color="#F87171" />
-            <span>{currentPersona.streakDays}d Streak</span>
+            <span>{streakDays}d Streak</span>
           </div>
           <div className="micro-stat" title="Karmayogi Credits">
             <Award size={13} color="#34D399" />
-            <span>{currentPersona.karmayogiCredits} pts</span>
+            <span>{karmayogiCredits} pts</span>
           </div>
         </div>
       </div>
+
 
       {/* Navigation Links */}
       <nav className="sidebar-nav">

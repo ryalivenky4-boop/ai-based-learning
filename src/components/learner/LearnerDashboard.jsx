@@ -25,8 +25,16 @@ export function LearnerDashboard({
   onSimulateCompleteCourse,
   enrollments
 }) {
-  const { overallReadiness, criticalGapsCount, moderateGapsCount, domainSummaries, criticalGaps } = gapAnalysis;
+  const { overallReadiness = 75, criticalGapsCount = 3, moderateGapsCount = 2, domainSummaries = [], criticalGaps = [] } = gapAnalysis || {};
   const topHighPriorityItem = recommendations?.structuredPathways?.[0]?.items?.[0] || recommendations?.recommendedIgot?.[0];
+
+  const name = persona?.full_name || persona?.name || 'MoSPI Officer';
+  const division = persona?.department || persona?.division || 'National Accounts Division';
+  const designation = persona?.job_role || persona?.designation || 'Statistical Officer';
+  const targetRole = (persona?.target_role || persona?.targetRole || 'Advanced Role');
+  const cadre = persona?.job_role || persona?.cadre || 'Official Statistical Service';
+  const posting = persona?.posting || persona?.organization || 'MoSPI, New Delhi';
+  const currentAssignment = persona?.currentAssignment || persona?.career_goal || 'Capacity Building & Official Statistics Modernization';
 
   return (
     <div className="learner-dashboard">
@@ -35,20 +43,20 @@ export function LearnerDashboard({
         <div className="hero-content">
           <div className="hero-badge-row">
             <span className="badge badge-saffron">OFFICIAL TRAINEE PORTAL</span>
-            <span className="badge badge-blue">{persona.division}</span>
-            <span className="badge badge-green">POSTING: {persona.posting}</span>
+            <span className="badge badge-blue">{division}</span>
+            <span className="badge badge-green">POSTING: {posting}</span>
           </div>
           <h1 className="hero-title">
-            Welcome back, <span className="gradient-text-saffron">{persona.name}</span>
+            Welcome back, <span className="gradient-text-saffron">{name}</span>
           </h1>
           <p className="hero-assignment">
-            <strong>Current Assignment:</strong> {persona.currentAssignment}
+            <strong>Current Assignment:</strong> {currentAssignment}
           </p>
           <div className="hero-career-track">
             <span className="career-label">Target Career Elevation:</span>
-            <span className="current-cadre-tag">{persona.designation}</span>
+            <span className="current-cadre-tag">{designation}</span>
             <ArrowRight size={14} color="#FF8547" />
-            <span className="next-cadre-tag">{persona.targetRole.toUpperCase()} • {persona.cadre}</span>
+            <span className="next-cadre-tag">{targetRole.toUpperCase()} • {cadre}</span>
           </div>
         </div>
 

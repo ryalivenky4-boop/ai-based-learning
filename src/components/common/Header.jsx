@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { RefreshCw, Moon, Sun, Award, CheckCircle2, User, Sparkles, Building2, Database } from 'lucide-react';
-import { OFFICIAL_PERSONAS } from '../../data/officialProfiles';
+import {
+  RefreshCw, Moon, Sun, User, Sparkles, Building2, Database,
+  LogOut, LogIn, Award, Clock, Flame, ChevronDown, CheckCircle2
+} from 'lucide-react';
 
 export function Header({
-  currentPersona,
-  onSelectPersona,
+  currentUser,
+  onOpenAuth,
+  onLogout,
   theme,
   onToggleTheme,
   onSyncIgot,
@@ -12,7 +15,18 @@ export function Header({
   lastSyncTime,
   dbStatus
 }) {
-  const [showPersonaMenu, setShowPersonaMenu] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  // Compute initials
+  const initials = currentUser?.full_name
+    ? currentUser.full_name
+        .split(' ')
+        .filter(n => !n.startsWith('Smt.') && !n.startsWith('Shri') && !n.startsWith('Dr.'))
+        .map(n => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase() || 'MO'
+    : 'GOI';
 
   return (
     <header className="app-header">
@@ -88,48 +102,97 @@ export function Header({
             {theme === 'dark' ? <Sun size={18} color="#FBBF24" /> : <Moon size={18} color="#1E293B" />}
           </button>
 
-          {/* Persona Switcher Dropdown */}
-          <div className="persona-switcher-wrapper">
-            <button
-              className="persona-btn"
-              onClick={() => setShowPersonaMenu(!showPersonaMenu)}
-            >
-              <div className="avatar-badge">{currentPersona.avatar}</div>
-              <div className="persona-info-compact">
-                <span className="persona-name">{currentPersona.name}</span>
-                <span className="persona-role-tag">{currentPersona.designation}</span>
-              </div>
-            </button>
-
-            {showPersonaMenu && (
-              <div className="persona-dropdown-menu glass-card">
-                <div className="dropdown-header">
-                  <User size={14} />
-                  <span>Switch MoSPI Trainee Profile</span>
+          {/* User Account or Sign In */}
+          {currentUser ? (
+            <div className="persona-switcher-wrapper">
+              <button
+                className="persona-btn"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
+                <div className="avatar-badge">{initials}</div>
+                <div className="persona-info-compact">
+                  <span className="persona-name">{currentUser.full_name}</span>
+                  <span className="persona-role-tag">{currentUser.job_role || 'Statistical Officer'}</span>
                 </div>
-                {OFFICIAL_PERSONAS.map(persona => (
-                  <div
-                    key={persona.id}
-                    className={`persona-option ${persona.id === currentPersona.id ? 'selected' : ''}`}
-                    onClick={() => {
-                      onSelectPersona(persona);
-                      setShowPersonaMenu(false);
-                    }}
-                  >
-                    <div className="avatar-badge-sm">{persona.avatar}</div>
-                    <div className="option-details">
-                      <div className="option-name">{persona.name}</div>
-                      <div className="option-cadre">{persona.designation}</div>
-                      <div className="option-division">{persona.division}</div>
-                    </div>
-                    {persona.id === currentPersona.id && (
-                      <CheckCircle2 size={16} color="#10B981" className="check-icon" />
-                    )}
+                <ChevronDown size={14} className="text-slate-400" />
+              </button>
+
+              {showUserMenu && (
+                <div className="persona-dropdown-menu glass-card">
+                  <div className="dropdown-header">
+                    <User size={14} />
+                    <span>Officer Profile (MySQL Verified)</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg mb-3">
+                    <div className="font-bold text-sm text-slate-900 dark:text-white">
+                      {currentUser.full_name}
+                    </div>
+                    <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                      {currentUser.email}
+                    </div>
+                    <div className="text-xs text-slate-500 mt-1">
+                      {currentUser.department || 'Official Statistics'} • {currentUser.organization || 'MoSPI'}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 mt-3 pt-2 border-t border-slate-200 dark:border-slate-700 text-center">
+                      <div>
+                        <div className="text-[10px] text-slate-400 uppercase font-bold">Credits</div>
+                        <div className="text-xs font-bold text-amber-500 flex items-center justify-center gap-1">
+                          <Award size={12} />
+                          {currentUser.karmayogi_credits || 0}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-slate-400 uppercase font-bold">Hours</div>
+                        <div className="text-xs font-bold text-emerald-500 flex items-center justify-center gap-1">
+                          <Clock size={12} />
+                          {currentUser.learning_hours || 0}h
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-slate-400 uppercase font-bold">Streak</div>
+                        <div className="text-xs font-bold text-rose-500 flex items-center justify-center gap-1">
+                          <Flame size={12} />
+                          {currentUser.streak_days || 1}d
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      onOpenAuth && onOpenAuth();
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300 transition"
+                  >
+                    <User size={14} />
+                    <span>Switch Officer Account</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      onLogout();
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-2 transition mt-1"
+                  >
+                    <LogOut size={14} />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={onOpenAuth}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition"
+            >
+              <LogIn size={15} />
+              <span>Officer Sign In</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -362,20 +425,6 @@ export function Header({
           justify-content: center;
         }
 
-        .avatar-badge-sm {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, var(--saffron-primary), var(--navy-primary));
-          color: #FFF;
-          font-weight: 700;
-          font-size: 0.7rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
         .persona-info-compact {
           display: flex;
           flex-direction: column;
@@ -399,10 +448,12 @@ export function Header({
           position: absolute;
           right: 0;
           top: calc(100% + 8px);
-          width: 320px;
+          width: 290px;
           padding: 12px;
           z-index: 100;
-          box-shadow: var(--shadow-lg);
+          background: var(--bg-card-solid);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-xl);
           border: 1px solid var(--border-medium);
         }
 
@@ -413,54 +464,11 @@ export function Header({
           padding-bottom: 10px;
           border-bottom: 1px solid var(--border-subtle);
           margin-bottom: 8px;
-          font-size: 0.78rem;
-          font-weight: 600;
+          font-size: 0.75rem;
+          font-weight: 700;
           color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.05em;
-        }
-
-        .persona-option {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 10px;
-          border-radius: var(--radius-md);
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .persona-option:hover {
-          background: var(--bg-card-hover);
-        }
-
-        .persona-option.selected {
-          background: rgba(255, 103, 31, 0.1);
-          border: 1px solid rgba(255, 103, 31, 0.3);
-        }
-
-        .option-details {
-          flex: 1;
-        }
-
-        .option-name {
-          font-size: 0.88rem;
-          font-weight: 600;
-          color: var(--text-primary);
-        }
-
-        .option-cadre {
-          font-size: 0.75rem;
-          color: var(--saffron-primary);
-        }
-
-        .option-division {
-          font-size: 0.72rem;
-          color: var(--text-muted);
-        }
-
-        .check-icon {
-          flex-shrink: 0;
         }
 
         @media (max-width: 900px) {
@@ -478,3 +486,4 @@ export function Header({
     </header>
   );
 }
+export default Header;
