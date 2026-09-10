@@ -45,19 +45,21 @@ app.get('/', (req, res) => {
   });
 });
 
-// Start Server
-app.listen(PORT, '0.0.0.0', async () => {
+// Start Server (only if not running under Vercel serverless environment)
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', async () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 Skill Bridge-Ai Backend API running on http://localhost:${PORT}`);
+    console.log(`Connecting to MySQL 8.0 Database...`);
 
-  console.log(`=======================================================`);
-  console.log(`🚀 Skill Bridge-Ai Backend API running on http://localhost:${PORT}`);
+    const status = await testConnection();
+    if (status.connected) {
+      console.log(`✅ MySQL Connected Successfully: ${status.user}@${status.host}:${status.port}/${status.database}`);
+    } else {
+      console.warn(`⚠️ MySQL Connection Warning: ${status.error}`);
+    }
+    console.log(`=======================================================`);
+  });
+}
 
-  console.log(`Connecting to MySQL 8.0 Database...`);
-
-  const status = await testConnection();
-  if (status.connected) {
-    console.log(`✅ MySQL Connected Successfully: ${status.user}@${status.host}:${status.port}/${status.database}`);
-  } else {
-    console.warn(`⚠️ MySQL Connection Warning: ${status.error}`);
-  }
-  console.log(`=======================================================`);
-});
+export default app;
