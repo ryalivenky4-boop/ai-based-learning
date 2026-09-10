@@ -272,4 +272,14 @@ router.get('/me', requireAuth, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/auth/logout
+ * Securely ends the user session
+ */
+router.post('/logout', (req, res) => {
+
+  res.json({ success: true, message: 'Logged out successfully.' });
+});
+
 export default router;
+

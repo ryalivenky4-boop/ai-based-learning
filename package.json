@@ -24,7 +24,8 @@
     "multer": "^2.3.0",
     "mysql2": "^3.24.4",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.3"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

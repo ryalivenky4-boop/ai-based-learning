@@ -110,6 +110,17 @@ export async function fetchCurrentUser() {
   }
 }
 
+export async function logoutUser() {
+  try {
+    await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+  } catch (err) {
+    console.warn('Logout notice:', err);
+  } finally {
+    clearToken();
+  }
+}
+
+
 // 3. User Skills, Target Skills & Competency Gaps
 export async function fetchUserSkills() {
   try {

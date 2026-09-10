@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Header } from './components/common/Header';
 import { Sidebar } from './components/common/Sidebar';
 import { LearnerDashboard } from './components/learner/LearnerDashboard';
@@ -7,7 +8,12 @@ import { LearningPathway } from './components/learner/LearningPathway';
 import { AssessmentCenter } from './components/assessment/AssessmentCenter';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { StatSahayakChat } from './components/ai-tutor/StatSahayakChat';
-import AuthModal from './components/auth/AuthModal';
+
+// Dedicated Separate Pages
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 import { analyzeCompetencyGaps } from './services/competencyEngine';
 import { generatePersonalizedPathway } from './services/recommendationEngine';
@@ -21,12 +27,12 @@ import {
   fetchCourseProgress,
   updateCourseProgress,
   submitQuizResultToDB,
-  clearToken,
+  logoutUser,
   getToken
 } from './services/apiClient';
-import { CheckCircle2, Sparkles, X, Database } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 
-function buildOfficerPersona(user, skills = [], gaps = []) {
+function buildOfficerPersona(user, skills = []) {
   if (!user) return null;
 
   const compScores = {};
@@ -105,20 +111,19 @@ function buildOfficerPersona(user, skills = [], gaps = []) {
 }
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // App Theme
   const [theme, setTheme] = useState('dark');
 
-  // MySQL Database Connection Status
-  const [dbStatus, setDbStatus] = useState({ connected: false, loading: true });
-
-  // Current Authenticated User & Persona
+  // Authentication State
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPersona, setCurrentPersona] = useState(null);
-  const [targetRoleKey, setTargetRoleKey] = useState('sso');
-  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  // Active Navigation Tab
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // MySQL Database Connection Status
+  const [dbStatus, setDbStatus] = useState({ connected: false, loading: true });
 
   // Real Database Data
   const [userSkills, setUserSkills] = useState([]);
@@ -141,16 +146,15 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Load authenticated user and MySQL connection
+  // Check initial authentication and MySQL connection
   useEffect(() => {
     let isMounted = true;
 
-    async function initApp() {
+    async function initAuth() {
       try {
         const health = await checkDatabaseHealth();
         if (isMounted) setDbStatus(health);
 
-        // Fetch authenticated user if token exists
         const token = getToken();
         if (token) {
           const profileData = await fetchCurrentUser();
@@ -159,10 +163,9 @@ export default function App() {
             setUserSkills(profileData.skills || []);
             setDbGaps(profileData.competencyGaps || []);
 
-            const persona = buildOfficerPersona(profileData.user, profileData.skills, profileData.competencyGaps);
+            const persona = buildOfficerPersona(profileData.user, profileData.skills);
             setCurrentPersona(persona);
 
-            // Fetch course progress & recommendations
             const [progressRows, recRows] = await Promise.all([
               fetchCourseProgress(),
               fetchPersonalizedRecommendations()
@@ -180,35 +183,33 @@ export default function App() {
               });
               setEnrollments(enrollMap);
             }
-          } else if (isMounted) {
-            setAuthModalOpen(true);
+          } else {
+            setCurrentUser(null);
+            setCurrentPersona(null);
           }
-        } else if (isMounted) {
-          // Open auth modal if no active session
-          setAuthModalOpen(true);
+        } else {
+          setCurrentUser(null);
+          setCurrentPersona(null);
         }
       } catch (err) {
-        console.warn('App initialization notice:', err);
+        console.warn('Auth check error:', err);
+      } finally {
+        if (isMounted) setAuthLoading(false);
       }
     }
 
-    initApp();
+    initAuth();
 
     // Check DB health periodically
     const interval = setInterval(async () => {
       const health = await checkDatabaseHealth();
       if (isMounted) setDbStatus(health);
-    }, 10000);
+    }, 12000);
 
-    // Listen for auth expiration
     const handleAuthExpired = () => {
       setCurrentUser(null);
       setCurrentPersona(null);
-      setAuthModalOpen(true);
-      setToast({
-        title: 'Session Expired',
-        message: 'Please sign in to access your capacity building records.'
-      });
+      navigate('/login');
     };
     window.addEventListener('samarth_auth_expired', handleAuthExpired);
 
@@ -217,9 +218,9 @@ export default function App() {
       clearInterval(interval);
       window.removeEventListener('samarth_auth_expired', handleAuthExpired);
     };
-  }, []);
+  }, [navigate]);
 
-  const handleAuthSuccess = async (user) => {
+  const handleLoginSuccess = async (user) => {
     setCurrentUser(user);
     const [skills, gaps, recs, progress] = await Promise.all([
       fetchUserSkills(),
@@ -232,7 +233,7 @@ export default function App() {
     setDbGaps(gaps);
     setDbRecommendations(recs);
 
-    const persona = buildOfficerPersona(user, skills, gaps);
+    const persona = buildOfficerPersona(user, skills);
     setCurrentPersona(persona);
 
     const enrollMap = {};
@@ -246,74 +247,53 @@ export default function App() {
     setEnrollments(enrollMap);
 
     setToast({
-      title: 'Welcome, Officer!',
-      message: `Signed in as ${user.full_name} (${user.job_role || 'MoSPI'}). Profile loaded from MySQL.`
+      title: 'Login Successful',
+      message: `Welcome back, ${user.full_name}! Officer profile authenticated with MySQL.`
     });
   };
 
-  const handleLogout = () => {
-    clearToken();
+  const handleLogout = async () => {
+    await logoutUser();
     setCurrentUser(null);
     setCurrentPersona(null);
-    setAuthModalOpen(true);
+    navigate('/login', { replace: true });
     setToast({
       title: 'Signed Out',
-      message: 'You have been securely signed out of SAMARTH-STAT.'
+      message: 'You have been securely signed out.'
     });
   };
 
-  // Safe persona fallback to prevent crashing during first paint or before auth
-  const activePersona = currentPersona || {
-    id: 'guest',
-    name: 'MoSPI Officer',
-    full_name: 'MoSPI Officer',
-    avatar: 'MO',
-    designation: 'Statistical Officer',
-    job_role: 'Statistical Officer',
-    roleKey: 'sso',
-    cadre: 'Subordinate Statistical Service',
-    division: 'Official Statistics Division',
-    department: 'Official Statistics Division',
-    posting: 'New Delhi',
-    organization: 'MoSPI',
-    targetRole: 'asst_dir',
-    karmayogiCredits: 120,
-    learningHours: 0,
-    streakDays: 1,
-    competencyScores: {
-      stat_survey_sampling: 3,
-      stat_national_accounts: 2,
-      stat_price_statistics: 3,
-      stat_labour_statistics: 3,
-      stat_industrial_stats: 3,
-      stat_sdg_indicators: 2,
-      stat_data_quality: 3,
-      tech_python_stats: 2,
-      tech_r_econometrics: 2,
-      tech_sql_databases: 2,
-      tech_gis_spatial: 2,
-      tech_data_viz: 2,
-      tech_ai_ml: 1,
-      tech_cloud_apis: 1,
-      gov_cybersecurity: 2,
-      gov_data_privacy: 3,
-      gov_dpi_cloud: 2,
-      gov_eoffice_workflows: 3,
-      mgmt_ethics_conduct: 4,
-      mgmt_project_management: 2,
-      mgmt_communication_briefs: 2,
-      mgmt_leadership_change: 1
+  // Determine active tab from pathname for Sidebar
+  const getActiveTabFromPath = () => {
+    const path = location.pathname;
+    if (path.startsWith('/competency') || path.startsWith('/skills') || path.startsWith('/profile')) return 'profile';
+    if (path.startsWith('/courses') || path.startsWith('/recommendations')) return 'pathway';
+    if (path.startsWith('/quiz') || path.startsWith('/assessment')) return 'assessment';
+    if (path.startsWith('/admin')) return 'admin';
+    if (path.startsWith('/tutor')) return 'tutor';
+    return 'dashboard';
+  };
+
+  const handleSidebarTabSelect = (tabId) => {
+    switch (tabId) {
+      case 'dashboard': navigate('/dashboard'); break;
+      case 'profile': navigate('/competency'); break;
+      case 'pathway': navigate('/courses'); break;
+      case 'assessment': navigate('/quiz'); break;
+      case 'admin': navigate('/admin'); break;
+      case 'tutor': navigate('/tutor'); break;
+      default: navigate('/dashboard');
     }
   };
 
   // Dynamic Skill Gap Analysis
-  const gapAnalysis = analyzeCompetencyGaps(activePersona.competencyScores, targetRoleKey);
+  const gapAnalysis = analyzeCompetencyGaps(currentPersona?.competencyScores || {}, currentPersona?.targetRole || 'sso');
 
   // Dynamic Personalized Recommendations (iGOT + NSSTA)
   const recommendations = generatePersonalizedPathway(
-    activePersona.competencyScores,
-    targetRoleKey,
-    activePersona.cadre
+    currentPersona?.competencyScores || {},
+    currentPersona?.targetRole || 'sso',
+    currentPersona?.cadre || 'Official Statistical Service'
   );
 
   const handleToggleTheme = () => {
@@ -334,9 +314,10 @@ export default function App() {
   };
 
   const handleSyncIgot = async () => {
+    if (!currentPersona) return;
     setIsSyncing(true);
     try {
-      await syncWithKarmayogiAPI(activePersona);
+      await syncWithKarmayogiAPI(currentPersona);
       setIsSyncing(false);
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setLastSyncTime(timeStr);
@@ -350,20 +331,18 @@ export default function App() {
   };
 
   const handleCompleteCourse = async (item) => {
-    // 1. Update reactive state
-    const updated = saveEnrollment(activePersona.id, item.id, 100);
+    if (!currentPersona) return;
+    const updated = saveEnrollment(currentPersona.id, item.id, 100);
     setEnrollments(updated);
 
-    // 2. Persist to MySQL
     if (currentUser) {
       try {
         await updateCourseProgress(item.id, 100, true);
       } catch (err) {
-        console.warn('Persist course completion warning:', err);
+        console.warn('Course progress update notice:', err);
       }
     }
 
-    // 3. Elevate persona stats
     setCurrentPersona(prev => {
       if (!prev) return prev;
       return {
@@ -381,7 +360,7 @@ export default function App() {
 
     setToast({
       title: 'Course Completed & Saved to MySQL!',
-      message: `Completed "${item.title}". +150 Karma Credits and hours updated.`
+      message: `Completed "${item.title}". +150 Karma Credits awarded.`
     });
   };
 
@@ -391,26 +370,17 @@ export default function App() {
     }
     setToast({
       title: 'Quiz Result Saved to MySQL',
-      message: `Score: ${resultData.scorePercentage}% recorded in MySQL quiz tables.`
+      message: `Score: ${resultData.scorePercentage}% saved to quiz history.`
     });
   };
 
   const handleQuickStartQuiz = (docId) => {
     setPresetQuizDocId(docId);
-    setActiveTab('assessment');
+    navigate('/quiz');
   };
 
   return (
     <div className="app-container">
-      {/* Auth Modal for Login & Registration */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => {
-          if (currentUser) setAuthModalOpen(false);
-        }}
-        onAuthSuccess={handleAuthSuccess}
-      />
-
       {/* Toast Notification */}
       {toast && (
         <div className="app-toast glass-card">
@@ -427,91 +397,217 @@ export default function App() {
         </div>
       )}
 
-      {/* Main App Layout */}
-      <div className="main-content-wrapper">
-        {/* Top Header */}
-        <Header
-          currentUser={currentUser}
-          onOpenAuth={() => setAuthModalOpen(true)}
-          onLogout={handleLogout}
-          theme={theme}
-          onToggleTheme={handleToggleTheme}
-          onSyncIgot={handleSyncIgot}
-          isSyncing={isSyncing}
-          lastSyncTime={lastSyncTime}
-          dbStatus={dbStatus}
+      <Routes>
+        {/* PUBLIC ROUTES */}
+        <Route
+          path="/login"
+          element={
+            currentUser ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <LoginPage onLoginSuccess={handleLoginSuccess} />
+            )
+          }
         />
 
-        <div style={{ display: 'flex', flex: 1 }}>
-          {/* Left Sidebar */}
-          <Sidebar
-            activeTab={activeTab}
-            onSelectTab={setActiveTab}
-            currentPersona={activePersona}
-            gapSummary={gapAnalysis}
-          />
+        <Route
+          path="/register"
+          element={
+            currentUser ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <RegisterPage />
+            )
+          }
+        />
 
-          {/* Center Main View Area */}
-          <main className="page-container">
-            {activeTab === 'dashboard' && (
-              <LearnerDashboard
-                persona={activePersona}
-                gapAnalysis={gapAnalysis}
-                recommendations={recommendations}
-                onNavigateTab={setActiveTab}
-                onQuickStartQuiz={handleQuickStartQuiz}
-                onSimulateCompleteCourse={handleCompleteCourse}
-                enrollments={enrollments}
-              />
-            )}
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-            {activeTab === 'profile' && (
-              <CompetencyProfile
-                persona={activePersona}
-                gapAnalysis={gapAnalysis}
-                targetRoleKey={targetRoleKey}
-                onSelectTargetRole={setTargetRoleKey}
-                onUpdateCompetencyScore={handleUpdateCompetencyScore}
-                onNavigateTab={setActiveTab}
-              />
-            )}
+        {/* PROTECTED MAIN APPLICATION ROUTES */}
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute isAuthenticated={!!currentUser} isLoading={authLoading}>
+              <div className="main-content-wrapper">
+                {/* Top Header */}
+                <Header
+                  currentUser={currentUser}
+                  onLogout={handleLogout}
+                  theme={theme}
+                  onToggleTheme={handleToggleTheme}
+                  onSyncIgot={handleSyncIgot}
+                  isSyncing={isSyncing}
+                  lastSyncTime={lastSyncTime}
+                  dbStatus={dbStatus}
+                />
 
-            {activeTab === 'pathway' && (
-              <LearningPathway
-                persona={activePersona}
-                recommendations={recommendations}
-                enrollments={enrollments}
-                onEnrollCourse={(item) => saveEnrollment(activePersona.id, item.id, 10)}
-                onCompleteCourse={handleCompleteCourse}
-                onNavigateTab={setActiveTab}
-              />
-            )}
+                <div style={{ display: 'flex', flex: 1 }}>
+                  {/* Left Sidebar */}
+                  <Sidebar
+                    activeTab={getActiveTabFromPath()}
+                    onSelectTab={handleSidebarTabSelect}
+                    currentPersona={currentPersona}
+                    gapSummary={gapAnalysis}
+                  />
 
-            {activeTab === 'assessment' && (
-              <AssessmentCenter
-                persona={activePersona}
-                onUpdateCompetencyScore={handleUpdateCompetencyScore}
-                onNavigateTab={setActiveTab}
-                presetDocId={presetQuizDocId}
-                onSubmitQuizResult={handleSaveQuizResult}
-              />
-            )}
+                  {/* Center Main View Area */}
+                  <main className="page-container">
+                    <Routes>
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <LearnerDashboard
+                            persona={currentPersona}
+                            gapAnalysis={gapAnalysis}
+                            recommendations={recommendations}
+                            onNavigateTab={handleSidebarTabSelect}
+                            onQuickStartQuiz={handleQuickStartQuiz}
+                            onSimulateCompleteCourse={handleCompleteCourse}
+                            enrollments={enrollments}
+                          />
+                        }
+                      />
 
-            {activeTab === 'admin' && (
-              <AdminDashboard
-                onNavigateTab={setActiveTab}
-              />
-            )}
+                      <Route
+                        path="/competency"
+                        element={
+                          <CompetencyProfile
+                            persona={currentPersona}
+                            gapAnalysis={gapAnalysis}
+                            targetRoleKey={currentPersona?.targetRole || 'sso'}
+                            onSelectTargetRole={() => {}}
+                            onUpdateCompetencyScore={handleUpdateCompetencyScore}
+                            onNavigateTab={handleSidebarTabSelect}
+                          />
+                        }
+                      />
 
-            {activeTab === 'tutor' && (
-              <StatSahayakChat
-                onNavigateTab={setActiveTab}
-                onStartQuizWithDoc={handleQuickStartQuiz}
-              />
-            )}
-          </main>
-        </div>
-      </div>
+                      <Route
+                        path="/skills"
+                        element={
+                          <CompetencyProfile
+                            persona={currentPersona}
+                            gapAnalysis={gapAnalysis}
+                            targetRoleKey={currentPersona?.targetRole || 'sso'}
+                            onSelectTargetRole={() => {}}
+                            onUpdateCompetencyScore={handleUpdateCompetencyScore}
+                            onNavigateTab={handleSidebarTabSelect}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/profile"
+                        element={
+                          <CompetencyProfile
+                            persona={currentPersona}
+                            gapAnalysis={gapAnalysis}
+                            targetRoleKey={currentPersona?.targetRole || 'sso'}
+                            onSelectTargetRole={() => {}}
+                            onUpdateCompetencyScore={handleUpdateCompetencyScore}
+                            onNavigateTab={handleSidebarTabSelect}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/courses"
+                        element={
+                          <LearningPathway
+                            persona={currentPersona}
+                            recommendations={recommendations}
+                            enrollments={enrollments}
+                            onEnrollCourse={(item) => saveEnrollment(currentPersona.id, item.id, 10)}
+                            onCompleteCourse={handleCompleteCourse}
+                            onNavigateTab={handleSidebarTabSelect}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/recommendations"
+                        element={
+                          <LearningPathway
+                            persona={currentPersona}
+                            recommendations={recommendations}
+                            enrollments={enrollments}
+                            onEnrollCourse={(item) => saveEnrollment(currentPersona.id, item.id, 10)}
+                            onCompleteCourse={handleCompleteCourse}
+                            onNavigateTab={handleSidebarTabSelect}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/progress"
+                        element={
+                          <LearningPathway
+                            persona={currentPersona}
+                            recommendations={recommendations}
+                            enrollments={enrollments}
+                            onEnrollCourse={(item) => saveEnrollment(currentPersona.id, item.id, 10)}
+                            onCompleteCourse={handleCompleteCourse}
+                            onNavigateTab={handleSidebarTabSelect}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/quiz"
+                        element={
+                          <AssessmentCenter
+                            persona={currentPersona}
+                            onUpdateCompetencyScore={handleUpdateCompetencyScore}
+                            onNavigateTab={handleSidebarTabSelect}
+                            presetDocId={presetQuizDocId}
+                            onSubmitQuizResult={handleSaveQuizResult}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/assessment"
+                        element={
+                          <AssessmentCenter
+                            persona={currentPersona}
+                            onUpdateCompetencyScore={handleUpdateCompetencyScore}
+                            onNavigateTab={handleSidebarTabSelect}
+                            presetDocId={presetQuizDocId}
+                            onSubmitQuizResult={handleSaveQuizResult}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/admin"
+                        element={
+                          <AdminDashboard
+                            onNavigateTab={handleSidebarTabSelect}
+                          />
+                        }
+                      />
+
+                      <Route
+                        path="/tutor"
+                        element={
+                          <StatSahayakChat
+                            onNavigateTab={handleSidebarTabSelect}
+                            onStartQuizWithDoc={handleQuickStartQuiz}
+                          />
+                        }
+                      />
+
+                      {/* Default root redirects to /dashboard */}
+                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    </Routes>
+                  </main>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
 
       <style>{`
         .app-toast {
@@ -534,35 +630,12 @@ export default function App() {
           to { transform: translateY(0); opacity: 1; }
         }
 
-        .toast-icon {
-          flex-shrink: 0;
-        }
-
-        .toast-text {
-          flex: 1;
-        }
-
-        .toast-title {
-          font-weight: 700;
-          font-size: 0.88rem;
-          color: var(--text-primary);
-        }
-
-        .toast-msg {
-          font-size: 0.78rem;
-          color: var(--text-secondary);
-          margin-top: 2px;
-          line-height: 1.35;
-        }
-
-        .btn-close-toast {
-          color: var(--text-muted);
-          padding: 4px;
-        }
-
-        .btn-close-toast:hover {
-          color: var(--text-primary);
-        }
+        .toast-icon { flex-shrink: 0; }
+        .toast-text { flex: 1; }
+        .toast-title { font-weight: 700; font-size: 0.88rem; color: var(--text-primary); }
+        .toast-msg { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.35; }
+        .btn-close-toast { color: var(--text-muted); padding: 4px; background: none; border: none; cursor: pointer; }
+        .btn-close-toast:hover { color: var(--text-primary); }
       `}</style>
     </div>
   );
