@@ -38,7 +38,7 @@ app.use('/api', apiRouter);
 // Root healthcheck
 app.get('/', (req, res) => {
   res.json({
-    name: 'SAMARTH-STAT MoSPI Learning Platform API',
+    name: 'Skill Bridge-Ai MoSPI Learning Platform API',
     status: 'online',
     mysql: 'MySQL 8.0 on localhost:3306',
     database: process.env.DB_NAME || 'samarth_stat'
@@ -48,7 +48,8 @@ app.get('/', (req, res) => {
 // Start Server
 app.listen(PORT, async () => {
   console.log(`=======================================================`);
-  console.log(`🚀 SAMARTH-STAT Backend API running on http://localhost:${PORT}`);
+  console.log(`🚀 Skill Bridge-Ai Backend API running on http://localhost:${PORT}`);
+
   console.log(`Connecting to MySQL 8.0 Database...`);
 
   const status = await testConnection();

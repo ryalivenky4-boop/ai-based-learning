@@ -172,10 +172,12 @@ export default function RegisterPage() {
           </div>
 
           <div className="brand-row">
-            <div className="emblem-box">स</div>
+            <div className="emblem-box">
+              <img src="/logo.png" alt="Skill Bridge-Ai Logo" className="brand-logo-img" />
+            </div>
             <div>
               <h1 className="register-title">
-                SAMARTH<span className="title-accent">-STAT</span>
+                Skill Bridge<span className="title-accent">-Ai</span>
               </h1>
               <div className="register-subtitle">New Officer Capacity Building Profile Registration</div>
             </div>
@@ -546,8 +548,9 @@ export default function RegisterPage() {
           <div className="form-footer-switch">
             <span>Already have an account?</span>
             <Link to="/login" className="switch-link">
-              Login to SAMARTH-STAT
+              Login to Skill Bridge-Ai
             </Link>
+
           </div>
         </div>
       </div>
@@ -611,18 +614,24 @@ export default function RegisterPage() {
         }
 
         .emblem-box {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, #FF671F 0%, #1E3A8A 100%);
+          width: 50px;
+          height: 50px;
+          border-radius: 14px;
+          background: #FFFFFF;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #FFF;
-          font-weight: 900;
-          font-size: 1.4rem;
-          box-shadow: 0 4px 14px rgba(255, 103, 31, 0.3);
+          overflow: hidden;
+          padding: 3px;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
         }
+
+        .brand-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
 
         .register-title {
           font-size: 1.8rem;

@@ -61,15 +61,16 @@ export default function LoginPage({ onLoginSuccess }) {
 
           <div className="brand-hero-title">
             <div className="emblem-box">
-              <span className="emblem-letter">स</span>
+              <img src="/logo.png" alt="Skill Bridge-Ai Logo" className="brand-logo-img" />
             </div>
             <div>
               <h1 className="main-app-title">
-                SAMARTH<span className="title-accent">-STAT</span>
+                Skill Bridge<span className="title-accent">-Ai</span>
               </h1>
-              <div className="sub-app-title">समर्थ-सांख्यिकी • Official Capacity Building</div>
+              <div className="sub-app-title">AI Competency Intelligence & Capacity Building</div>
             </div>
           </div>
+
 
           <p className="brand-description">
             AI-enabled competency intelligence and personalized training platform for India’s Official Statistical System. Strengthen capacity across national accounts, sample surveys, microdata governance, and modern AI/ML methodologies.
@@ -203,9 +204,10 @@ export default function LoginPage({ onLoginSuccess }) {
                   </>
                 ) : (
                   <>
-                    <span>Sign In to SAMARTH-STAT</span>
+                    <span>Sign In to Skill Bridge-Ai</span>
                     <ArrowRight size={18} />
                   </>
+
                 )}
               </button>
             </form>
@@ -280,18 +282,24 @@ export default function LoginPage({ onLoginSuccess }) {
         }
 
         .emblem-box {
-          width: 54px;
-          height: 54px;
+          width: 58px;
+          height: 58px;
           border-radius: 16px;
-          background: linear-gradient(135deg, #FF671F 0%, #1E3A8A 100%);
+          background: #FFFFFF;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #FFF;
-          font-weight: 900;
-          font-size: 1.6rem;
-          box-shadow: 0 6px 18px rgba(255, 103, 31, 0.3);
+          overflow: hidden;
+          padding: 4px;
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
         }
+
+        .brand-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
 
         .main-app-title {
           font-size: 2.2rem;

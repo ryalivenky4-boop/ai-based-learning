@@ -38,7 +38,7 @@ export function Header({
         <div className="header-brand">
           <div className="brand-logo-container">
             <div className="emblem-circle">
-              <Building2 className="emblem-icon" size={20} />
+              <img src="/logo.png" alt="Skill Bridge-Ai Logo" className="app-header-logo" />
             </div>
             <div className="brand-titles">
               <div className="brand-top-tag">
@@ -49,11 +49,11 @@ export function Header({
                 <span className="igot-badge">iGOT KARMAYOGI</span>
               </div>
               <h1 className="brand-main-title">
-                SAMARTH<span className="title-accent">-STAT</span>
-                <span className="hindi-title"> (समर्थ-सांख्यिकी)</span>
+                Skill Bridge<span className="title-accent">-Ai</span>
               </h1>
             </div>
           </div>
+
         </div>
 
         {/* Right Actions */}
@@ -229,16 +229,24 @@ export function Header({
         }
 
         .emblem-circle {
-          width: 40px;
-          height: 40px;
+          width: 44px;
+          height: 44px;
           border-radius: 12px;
-          background: linear-gradient(135deg, #FF671F 0%, #1E3A8A 100%);
+          background: #FFFFFF;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #FFFFFF;
-          box-shadow: 0 4px 12px rgba(255, 103, 31, 0.3);
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+          padding: 2px;
         }
+
+        .app-header-logo {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
 
         .brand-titles {
           display: flex;

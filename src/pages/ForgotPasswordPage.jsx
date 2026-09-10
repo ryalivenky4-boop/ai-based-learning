@@ -20,12 +20,15 @@ export default function ForgotPasswordPage() {
 
       <div className="forgot-card glass-card">
         <div className="brand-header">
-          <div className="emblem-box">स</div>
+          <div className="emblem-box">
+            <img src="/logo.png" alt="Skill Bridge-Ai Logo" className="brand-logo-img" />
+          </div>
           <div>
-            <h2 className="title">SAMARTH<span className="accent">-STAT</span></h2>
+            <h2 className="title">Skill Bridge<span className="accent">-Ai</span></h2>
             <div className="subtitle">Official Password Recovery</div>
           </div>
         </div>
+
 
         {submitted ? (
           <div className="success-content animate-fadeIn">
@@ -124,18 +127,24 @@ export default function ForgotPasswordPage() {
         }
 
         .emblem-box {
-          width: 42px;
-          height: 42px;
+          width: 44px;
+          height: 44px;
           border-radius: 12px;
-          background: linear-gradient(135deg, #FF671F 0%, #1E3A8A 100%);
+          background: #FFFFFF;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #FFF;
-          font-weight: 900;
-          font-size: 1.3rem;
-          box-shadow: 0 4px 12px rgba(255, 103, 31, 0.3);
+          overflow: hidden;
+          padding: 2px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
+
+        .brand-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
 
         .title {
           font-size: 1.3rem;
