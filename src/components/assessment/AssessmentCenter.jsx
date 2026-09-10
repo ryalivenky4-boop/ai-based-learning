@@ -26,7 +26,8 @@ export function AssessmentCenter({
   persona,
   onUpdateCompetencyScore,
   onNavigateTab,
-  presetDocId = null
+  presetDocId = null,
+  onSubmitQuizResult = null
 }) {
   // Navigation tabs inside Assessment Center
   const [activeTab, setActiveTab] = useState('generate'); // 'generate' | 'quiz' | 'result' | 'studio'
@@ -155,7 +156,7 @@ export function AssessmentCenter({
       });
     }
 
-    setQuizResult({
+    const resultPayload = {
       quizTitle: activeQuiz.quizTitle,
       totalQuestions: activeQuiz.questions.length,
       correctCount,
@@ -163,7 +164,13 @@ export function AssessmentCenter({
       passed,
       evaluations: questionEvaluations,
       completedAt: new Date().toLocaleTimeString()
-    });
+    };
+
+    setQuizResult(resultPayload);
+
+    if (onSubmitQuizResult) {
+      onSubmitQuizResult(resultPayload);
+    }
 
     setActiveTab('result');
   };

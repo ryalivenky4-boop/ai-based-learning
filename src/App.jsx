@@ -12,11 +12,21 @@ import { OFFICIAL_PERSONAS } from './data/officialProfiles';
 import { analyzeCompetencyGaps } from './services/competencyEngine';
 import { generatePersonalizedPathway } from './services/recommendationEngine';
 import { getStoredEnrollments, saveEnrollment, syncWithKarmayogiAPI } from './services/igotSyncService';
-import { CheckCircle2, Sparkles, X } from 'lucide-react';
+import {
+  checkDatabaseHealth,
+  fetchTraineesFromDB,
+  updateCompetencyScoreInDB,
+  completeCourseInDB,
+  submitQuizResultToDB
+} from './services/apiClient';
+import { CheckCircle2, Sparkles, X, Database } from 'lucide-react';
 
 export default function App() {
   // App Theme: default to 'dark' for sleek high-tech look
   const [theme, setTheme] = useState('dark');
+
+  // MySQL Database Connection Status
+  const [dbStatus, setDbStatus] = useState({ connected: false, loading: true });
 
   // Trainee Persona State
   const [currentPersona, setCurrentPersona] = useState(OFFICIAL_PERSONAS[0]);
@@ -40,6 +50,50 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Connect to MySQL and fetch live database status & trainees
+  useEffect(() => {
+    let isMounted = true;
+
+    async function initDatabase() {
+      try {
+        const health = await checkDatabaseHealth();
+        if (isMounted) {
+          setDbStatus(health);
+        }
+
+        if (health && health.connected) {
+          const traineesFromDb = await fetchTraineesFromDB();
+          if (isMounted && traineesFromDb && traineesFromDb.length > 0) {
+            // Find current persona in MySQL
+            const matched = traineesFromDb.find(t => t.id === currentPersona.id) || traineesFromDb[0];
+            setCurrentPersona(matched);
+            setTargetRoleKey(matched.targetRole);
+            if (matched.enrollments) {
+              setEnrollments(matched.enrollments);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('MySQL health check warning:', err);
+      }
+    }
+
+    initDatabase();
+
+    // Check DB health periodically
+    const interval = setInterval(async () => {
+      const health = await checkDatabaseHealth();
+      if (isMounted) {
+        setDbStatus(health);
+      }
+    }, 8000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   // Load enrollments whenever persona changes
   useEffect(() => {
@@ -72,6 +126,7 @@ export default function App() {
   };
 
   const handleUpdateCompetencyScore = (competencyId, newScore) => {
+    // 1. Update local reactive state
     setCurrentPersona(prev => ({
       ...prev,
       competencyScores: {
@@ -79,6 +134,9 @@ export default function App() {
         [competencyId]: newScore
       }
     }));
+
+    // 2. Persist directly to MySQL database
+    updateCompetencyScoreInDB(currentPersona.id, competencyId, newScore);
   };
 
   const handleSyncIgot = async () => {
@@ -98,7 +156,7 @@ export default function App() {
   };
 
   const handleCompleteCourse = (item) => {
-    // 1. Save enrollment as completed
+    // 1. Save enrollment as completed locally
     const updated = saveEnrollment(currentPersona.id, item.id, 100);
     setEnrollments(updated);
 
@@ -117,11 +175,23 @@ export default function App() {
         }
       }));
 
+      // 3. Persist course completion and score update directly to MySQL
+      completeCourseInDB(currentPersona.id, item);
+
       setToast({
-        title: 'Skill Level Upgraded! (+1 Level)',
-        message: `Completed "${item.title}". Competency score elevated from L${currentLevel} to L${nextLevel}. +${item.karmayogiCredits || 150} Karma Credits awarded.`
+        title: 'Skill Level Upgraded in MySQL! (+1 Level)',
+        message: `Completed "${item.title}". Competency score elevated to L${nextLevel}. Saved to MySQL database.`
       });
     }
+  };
+
+  const handleSaveQuizResult = (resultData) => {
+    // Persist quiz submission to MySQL database
+    submitQuizResultToDB(currentPersona.id, resultData);
+    setToast({
+      title: 'Quiz Result Saved to MySQL',
+      message: `Score: ${resultData.scorePercentage}% recorded in table 'quiz_submissions'.`
+    });
   };
 
   const handleQuickStartQuiz = (docId) => {
@@ -158,6 +228,7 @@ export default function App() {
           onSyncIgot={handleSyncIgot}
           isSyncing={isSyncing}
           lastSyncTime={lastSyncTime}
+          dbStatus={dbStatus}
         />
 
         <div style={{ display: 'flex', flex: 1 }}>
@@ -211,6 +282,7 @@ export default function App() {
                 onUpdateCompetencyScore={handleUpdateCompetencyScore}
                 onNavigateTab={setActiveTab}
                 presetDocId={presetQuizDocId}
+                onSubmitQuizResult={handleSaveQuizResult}
               />
             )}
 

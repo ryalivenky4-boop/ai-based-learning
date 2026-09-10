@@ -71,6 +71,9 @@ Statistical personnel across cadres—including the **Indian Statistical Service
 
 ## 🛠️ Technology Stack
 - **Frontend Framework:** React 18, Vite 8
+- **Backend API Server:** Node.js, Express.js (Port 5000 with REST API & CORS)
+- **Database Engine:** MySQL 8.0 (`mysql2/promise` connection pool on localhost:3306)
+- **Database Name:** `samarth_stat`
 - **Styling:** Bespoke Vanilla CSS Design System with Glassmorphism, CSS Custom Properties, and Indian National Tricolor accents (`#FF671F` Saffron, `#059669` Green, `#1E3A8A` Navy).
 - **Typography:** Google Fonts (`Outfit`, `Inter`, `JetBrains Mono`).
 - **Icons & Visuals:** `lucide-react`, Custom SVG Emblem & Favicon.
@@ -78,11 +81,32 @@ Statistical personnel across cadres—including the **Indian Statistical Service
 
 ---
 
-## 💻 Local Development Setup
+## 🗄️ Database Architecture (MySQL 8.0)
+The platform persists all capacity-building data into a relational MySQL database:
+1. **`trainees`**: Stores MoSPI official profiles across ISS and SSS cadres.
+2. **`trainee_competencies`**: Relational competency ratings across 24 official statistical domains (Levels 1 to 5).
+3. **`course_enrollments`**: Records iGOT Karmayogi module completion telemetry and NSSTA TPAC nominations.
+4. **`quiz_submissions`**: Stores AI-generated assessment results, scores, and question evaluations.
+5. **`workforce_analytics`**: Ministry-wide and division-level aggregate health metrics.
+
+---
+
+## 💻 Local Development & Database Setup
 
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm (v9 or higher)
+- MySQL Server 8.0 (running on localhost:3306)
+
+### Environment Configuration (`.env`)
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=venkatesh2007
+DB_NAME=samarth_stat
+PORT=5000
+```
 
 ### Installation & Execution
 ```bash
@@ -93,14 +117,16 @@ cd ai-based-learning
 # 2. Install dependencies
 npm install
 
-# 3. Start development server
-npm run dev
+# 3. Initialize MySQL Database & Seed Tables
+npm run init-db
 
-# 4. Build production bundle
-npm run build
+# 4. Run Full Stack (Express Backend + Vite Frontend concurrently)
+npm run dev:all
 ```
-
-The application will be available at `http://localhost:5173/`.
+Or run individually:
+- Backend Express API Server: `npm run server` (runs on `http://localhost:5000`)
+- Frontend React Client: `npm run dev` (runs on `http://localhost:5173`)
+- Build Production Bundle: `npm run build`
 
 ---
 

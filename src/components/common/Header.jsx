@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, Moon, Sun, Award, CheckCircle2, User, Sparkles, Building2 } from 'lucide-react';
+import { RefreshCw, Moon, Sun, Award, CheckCircle2, User, Sparkles, Building2, Database } from 'lucide-react';
 import { OFFICIAL_PERSONAS } from '../../data/officialProfiles';
 
 export function Header({
@@ -9,7 +9,8 @@ export function Header({
   onToggleTheme,
   onSyncIgot,
   isSyncing,
-  lastSyncTime
+  lastSyncTime,
+  dbStatus
 }) {
   const [showPersonaMenu, setShowPersonaMenu] = useState(false);
 
@@ -43,6 +44,22 @@ export function Header({
 
         {/* Right Actions */}
         <div className="header-actions">
+          {/* Live MySQL Database Status Badge */}
+          <div
+            className={`db-status-pill ${dbStatus?.connected ? 'connected' : 'connecting'}`}
+            title={
+              dbStatus?.connected
+                ? `MySQL 8.0 Live Database: ${dbStatus.database || 'samarth_stat'} on ${dbStatus.host || 'localhost'}:${dbStatus.port || 3306} (User: ${dbStatus.user || 'root'})`
+                : 'Connecting to MySQL Server (localhost:3306)...'
+            }
+          >
+            <Database size={14} className={dbStatus?.connected ? 'db-icon-pulse' : ''} />
+            <span className="db-pill-text">
+              {dbStatus?.connected ? 'MySQL 8.0 Connected' : 'MySQL Connecting...'}
+            </span>
+            <span className={`db-status-dot ${dbStatus?.connected ? 'green' : 'amber'}`} />
+          </div>
+
           {/* iGOT Sync Button */}
           <button
             className={`btn-sync-igot ${isSyncing ? 'syncing' : ''}`}
@@ -211,6 +228,53 @@ export function Header({
           display: flex;
           align-items: center;
           gap: 16px;
+        }
+
+        .db-status-pill {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 12px;
+          border-radius: var(--radius-full);
+          font-size: 0.78rem;
+          font-weight: 600;
+          transition: all 0.2s ease;
+          border: 1px solid var(--border-subtle);
+          background: var(--bg-card-solid);
+        }
+
+        .db-status-pill.connected {
+          color: var(--green-light);
+          border-color: rgba(16, 185, 129, 0.35);
+          background: rgba(16, 185, 129, 0.08);
+        }
+
+        .db-status-pill.connecting {
+          color: #F59E0B;
+          border-color: rgba(245, 158, 11, 0.35);
+          background: rgba(245, 158, 11, 0.08);
+        }
+
+        .db-pill-text {
+          font-family: var(--font-mono);
+          font-size: 0.75rem;
+        }
+
+        .db-status-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+        }
+
+        .db-status-dot.green {
+          background-color: #10B981;
+          box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+        }
+
+        .db-status-dot.amber {
+          background-color: #F59E0B;
+          box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+          animation: pulseGlow 1.5s infinite;
         }
 
         .btn-sync-igot {

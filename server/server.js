@@ -1,0 +1,51 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import apiRouter from './routes/api.js';
+import { testConnection } from './db.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json());
+
+// API Routes
+app.use('/api', apiRouter);
+
+// Root healthcheck
+app.get('/', (req, res) => {
+  res.json({
+    name: 'SAMARTH-STAT MoSPI Learning Platform API',
+    status: 'online',
+    mysql: 'MySQL 8.0 on localhost:3306',
+    database: process.env.DB_NAME || 'samarth_stat'
+  });
+});
+
+// Start Server
+app.listen(PORT, async () => {
+  console.log(`=======================================================`);
+  console.log(`🚀 SAMARTH-STAT Backend API running on http://localhost:${PORT}`);
+  console.log(`Connecting to MySQL 8.0 Database...`);
+
+  const status = await testConnection();
+  if (status.connected) {
+    console.log(`✅ MySQL Connected Successfully: ${status.user}@${status.host}:${status.port}/${status.database}`);
+  } else {
+    console.warn(`⚠️ MySQL Connection Warning: ${status.error}`);
+  }
+  console.log(`=======================================================`);
+});
