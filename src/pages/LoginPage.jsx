@@ -26,7 +26,7 @@ export default function LoginPage({ onLoginSuccess }) {
       const res = await loginUser(email, password);
       if (res.success && res.user) {
         if (onLoginSuccess) {
-          onLoginSuccess(res.user);
+          await onLoginSuccess(res.user);
         }
         navigate('/dashboard', { replace: true });
       }

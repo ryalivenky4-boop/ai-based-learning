@@ -221,35 +221,44 @@ export default function App() {
   }, [navigate]);
 
   const handleLoginSuccess = async (user) => {
+    // 1. Synchronously set user & persona so ProtectedRoute & Dashboard are immediately active
+    const basePersona = buildOfficerPersona(user, []);
     setCurrentUser(user);
-    const [skills, gaps, recs, progress] = await Promise.all([
-      fetchUserSkills(),
-      fetchCompetencyGaps(),
-      fetchPersonalizedRecommendations(),
-      fetchCourseProgress()
-    ]);
-
-    setUserSkills(skills);
-    setDbGaps(gaps);
-    setDbRecommendations(recs);
-
-    const persona = buildOfficerPersona(user, skills);
-    setCurrentPersona(persona);
-
-    const enrollMap = {};
-    progress.forEach(p => {
-      enrollMap[p.course_id] = {
-        course_id: p.course_id,
-        progress: p.progress_percentage,
-        status: p.progress_percentage >= 100 ? 'completed' : 'in_progress'
-      };
-    });
-    setEnrollments(enrollMap);
+    setCurrentPersona(basePersona);
 
     setToast({
       title: 'Login Successful',
-      message: `Welcome back, ${user.full_name}! Officer profile authenticated with MySQL.`
+      message: `Welcome back, ${user.full_name}! Officer profile authenticated.`
     });
+
+    // 2. Fetch full skills, gaps, recommendations in background
+    try {
+      const [skills, gaps, recs, progress] = await Promise.all([
+        fetchUserSkills(),
+        fetchCompetencyGaps(),
+        fetchPersonalizedRecommendations(),
+        fetchCourseProgress()
+      ]);
+
+      setUserSkills(skills || []);
+      setDbGaps(gaps || []);
+      setDbRecommendations(recs || []);
+
+      const fullPersona = buildOfficerPersona(user, skills || []);
+      setCurrentPersona(fullPersona);
+
+      const enrollMap = {};
+      (progress || []).forEach(p => {
+        enrollMap[p.course_id] = {
+          course_id: p.course_id,
+          progress: p.progress_percentage,
+          status: p.progress_percentage >= 100 ? 'completed' : 'in_progress'
+        };
+      });
+      setEnrollments(enrollMap);
+    } catch (err) {
+      console.warn('Post-login background fetch:', err);
+    }
   };
 
   const handleLogout = async () => {
