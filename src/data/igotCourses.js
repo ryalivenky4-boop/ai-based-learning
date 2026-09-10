@@ -1,0 +1,506 @@
+// iGOT Karmayogi Course Repository mapped to India's Official Statistics Competencies
+
+export const IGOT_COURSES = [
+  // --- STATISTICAL MODULES ---
+  {
+    id: 'igot_stat_101',
+    code: 'IGOT-STAT-001',
+    title: 'Foundations of Survey Sampling & Field Methodologies in Official Statistics',
+    provider: 'NSSTA & Karmayogi Bharat',
+    competencyId: 'stat_survey_sampling',
+    level: 2,
+    durationHours: 12.0,
+    modulesCount: 6,
+    karmayogiCredits: 150,
+    rating: 4.8,
+    reviewsCount: 1420,
+    thumbnailIcon: 'ClipboardList',
+    tags: ['MoSPI', 'Survey Design', 'Sampling', 'PLFS', 'Field Operations'],
+    overview: 'Covers stratified multi-stage sampling designs, household listing procedures, substitution rules, and sampling weight calculations used in national surveys like PLFS and Consumer Expenditure.',
+    syllabus: [
+      'Overview of National Sample Survey (NSS) Architecture',
+      'Stratified Multi-Stage Sampling Designs & Frame Preparation',
+      'Sample Allocation and Selection of Primary Sampling Units (PSUs)',
+      'Sub-stratification, Hamlet-Group/Sub-block Formation',
+      'Multiplier Calculation & Weight Calibration Techniques',
+      'Field Audit and Non-Sampling Error Reduction'
+    ]
+  },
+  {
+    id: 'igot_stat_102',
+    code: 'IGOT-STAT-002',
+    title: 'System of National Accounts (SNA 2008) & GVA Compilation',
+    provider: 'National Accounts Division (NAD) - MoSPI',
+    competencyId: 'stat_national_accounts',
+    level: 3,
+    durationHours: 16.0,
+    modulesCount: 8,
+    karmayogiCredits: 200,
+    rating: 4.9,
+    reviewsCount: 890,
+    thumbnailIcon: 'TrendingUp',
+    tags: ['SNA 2008', 'GDP', 'GVA', 'National Accounts', 'Macroeconomics'],
+    overview: 'Comprehensive guide to Gross Value Added (GVA) at basic prices, GDP at market prices, Supply and Use Tables (SUT), and institutional sector accounts in India.',
+    syllabus: [
+      'Conceptual Framework of SNA 2008 and Sequence of Accounts',
+      'Measuring GVA: Production Approach vs Expenditure Approach',
+      'Taxes Less Subsidies on Products and Basic Price Formulation',
+      'Financial Intermediation Services Indirectly Measured (FISIM)',
+      'Compilation of Supply and Use Tables (SUT)',
+      'Transition to SNA 2025: Digital Economy & Well-Being Measures'
+    ]
+  },
+  {
+    id: 'igot_stat_103',
+    code: 'IGOT-STAT-003',
+    title: 'Consumer Price Index (CPI) & Inflation Measurement Methodologies',
+    provider: 'Price Statistics Division - MoSPI',
+    competencyId: 'stat_price_statistics',
+    level: 3,
+    durationHours: 10.0,
+    modulesCount: 5,
+    karmayogiCredits: 120,
+    rating: 4.7,
+    reviewsCount: 650,
+    thumbnailIcon: 'Tag',
+    tags: ['Price Index', 'CPI', 'Inflation', 'Laspeyres', 'Base Revision'],
+    overview: 'Learn basket selection, item specifications, price collection protocols from rural and urban markets, and chained Laspeyres index formulation for All-India CPI (Rural, Urban, Combined).',
+    syllabus: [
+      'Introduction to Price Indices and Formulae (Laspeyres, Paasche, Fisher)',
+      'Market Selection and Price Collection Web Portal Operations',
+      'Treatment of Missing Prices and Quality Adjustments',
+      'Compilation of CPI (Rural, Urban, Combined)',
+      'Base Year Revision Methodologies & Hedonic Pricing'
+    ]
+  },
+  {
+    id: 'igot_stat_104',
+    code: 'IGOT-STAT-004',
+    title: 'Periodic Labour Force Survey (PLFS): Indicators & Microdata Analysis',
+    provider: 'MoSPI & V.V. Giri National Labour Institute',
+    competencyId: 'stat_labour_statistics',
+    level: 3,
+    durationHours: 14.0,
+    modulesCount: 7,
+    karmayogiCredits: 180,
+    rating: 4.8,
+    reviewsCount: 1100,
+    thumbnailIcon: 'Users',
+    tags: ['PLFS', 'Labour', 'Employment', 'Unemployment', 'CWS', 'Usual Status'],
+    overview: 'Deep dive into labour market indicators: Usual Principal and Subsidiary Status (UPSS), Current Weekly Status (CWS), Labour Force Participation Rate (LFPR), and Worker Population Ratio (WPR).',
+    syllabus: [
+      'Concepts of Activity Status: Principal vs Subsidiary Activity',
+      'Current Weekly Status (CWS) vs Usual Status (ps+ss)',
+      'Estimation of LFPR, WPR, and Unemployment Rate (UR)',
+      'Informal Employment and Social Security Entitlements',
+      'Hands-on Unit Record Data Extraction and Tabulation'
+    ]
+  },
+  {
+    id: 'igot_stat_105',
+    code: 'IGOT-STAT-005',
+    title: 'Annual Survey of Industries (ASI): Factory Accounting & Scrutiny Manual',
+    provider: 'Economic Statistics Division (ESD) - MoSPI',
+    competencyId: 'stat_industrial_stats',
+    level: 3,
+    durationHours: 12.0,
+    modulesCount: 6,
+    karmayogiCredits: 160,
+    rating: 4.6,
+    reviewsCount: 730,
+    thumbnailIcon: 'Factory',
+    tags: ['ASI', 'Manufacturing', 'NIC Codes', 'Gross Output', 'Depreciation'],
+    overview: 'Standard procedures for scrutiny of ASI Block C (Fixed Assets), Block D (Working Capital), Block E (Employment), and Block H (Input items) using Factory Balance Sheets.',
+    syllabus: [
+      'Scope and Coverage of Registered Factory Sector under Factories Act 1948',
+      'National Industrial Classification (NIC-2008) 5-Digit Tagging',
+      'Scrutiny of Balance Sheet Items: Fixed Capital, Invested Capital',
+      'Valuation of Inputs, Fuels, and Consumables',
+      'Validation of Gross Output, Net Value Added, and Profit Calculation'
+    ]
+  },
+  {
+    id: 'igot_stat_106',
+    code: 'IGOT-STAT-006',
+    title: 'National Indicator Framework (NIF) for Sustainable Development Goals (SDGs)',
+    provider: 'Social Statistics Division (SSD) & NITI Aayog',
+    competencyId: 'stat_sdg_indicators',
+    level: 3,
+    durationHours: 8.0,
+    modulesCount: 4,
+    karmayogiCredits: 100,
+    rating: 4.7,
+    reviewsCount: 520,
+    thumbnailIcon: 'Target',
+    tags: ['SDG', 'NIF', 'Sustainable Development', 'Metadata', 'Target 2030'],
+    overview: 'Alignment of India’s 17 SDGs with the 300+ indicators of the National Indicator Framework (NIF), data flows across line ministries, and state SDG monitoring.',
+    syllabus: [
+      'Architecture of India’s National Indicator Framework (NIF)',
+      'Data Sources and Frequency of Reporting across Line Ministries',
+      'Indicator Standardization and Metadata Formulation',
+      'Sub-national Localization: State & District Indicator Frameworks (DIF)'
+    ]
+  },
+  {
+    id: 'igot_stat_107',
+    code: 'IGOT-STAT-007',
+    title: 'Data Quality Assurance Framework (DQAF) & SDMX Standards',
+    provider: 'Data Informatics & Innovation Division (DIID) - MoSPI',
+    competencyId: 'stat_data_quality',
+    level: 3,
+    durationHours: 10.0,
+    modulesCount: 5,
+    karmayogiCredits: 140,
+    rating: 4.9,
+    reviewsCount: 440,
+    thumbnailIcon: 'ShieldCheck',
+    tags: ['DQAF', 'SDMX', 'Metadata', 'Data Governance', 'UNSD'],
+    overview: 'Implementation of MoSPI DQAF based on IMF and UN guidelines, along with Statistical Data and Metadata Exchange (SDMX) formats for cross-agency interoperability.',
+    syllabus: [
+      'Principles of MoSPI Data Quality Assurance Framework',
+      'Dimensions of Quality: Relevance, Accuracy, Timeliness, Accessibility',
+      'SDMX Information Model: Data Structures, Concept Schemes, Code Lists',
+      'Automated Quality Audits on Large-Scale Survey Returns'
+    ]
+  },
+
+  // --- TECHNICAL & AI MODULES ---
+  {
+    id: 'igot_tech_201',
+    code: 'IGOT-TECH-001',
+    title: 'Python for Official Statistics: Microdata Processing with Pandas & SciPy',
+    provider: 'DIID - MoSPI & IIT Delhi (via iGOT)',
+    competencyId: 'tech_python_stats',
+    level: 2,
+    durationHours: 18.0,
+    modulesCount: 9,
+    karmayogiCredits: 250,
+    rating: 4.9,
+    reviewsCount: 3100,
+    thumbnailIcon: 'Code2',
+    tags: ['Python', 'Pandas', 'Microdata', 'Data Cleaning', 'Automation'],
+    overview: 'Hands-on practical programming in Python to ingest, parse, validate, and aggregate multimillion-record survey files from PLFS, ASI, and National Accounts.',
+    syllabus: [
+      'Python Environment Setup for Government Analysts (Jupyter & VS Code)',
+      'Data Manipulation with Pandas: Reading Fixed-Width (.txt) & CSV microdata',
+      'Applying Sampling Weights and Calculating Weighted Means/Totals',
+      'Handling Missing Values, Outliers, and Inconsistent Records',
+      'Writing Automated Verification & Scrutiny Scripts'
+    ]
+  },
+  {
+    id: 'igot_tech_202',
+    code: 'IGOT-TECH-002',
+    title: 'R for Complex Survey Data Analysis & Econometric Modelling',
+    provider: 'Indian Statistical Institute (ISI) & Karmayogi Bharat',
+    competencyId: 'tech_r_econometrics',
+    level: 3,
+    durationHours: 16.0,
+    modulesCount: 8,
+    karmayogiCredits: 220,
+    rating: 4.8,
+    reviewsCount: 1850,
+    thumbnailIcon: 'LineChart',
+    tags: ['R', 'Survey Package', 'Econometrics', 'Time Series', 'ggplot2'],
+    overview: 'Use R and the specialized `survey` library to specify complex multi-stage cluster survey designs, calculate standard errors, design effects, and econometric regressions.',
+    syllabus: [
+      'Introduction to R for Official Statisticians',
+      'Specifying Survey Designs using `svydesign` with Strata and PSUs',
+      'Domain Estimation and Jackknife / Bootstrap Variance Estimation',
+      'Time Series Modelling (ARIMA, Seasonal Decomposition) for IIP/CPI',
+      'Visualizing Official Indicators with ggplot2'
+    ]
+  },
+  {
+    id: 'igot_tech_203',
+    code: 'IGOT-TECH-003',
+    title: 'Relational Databases & SQL for Census and Survey Data Warehouses',
+    provider: 'National Informatics Centre (NIC) & Karmayogi Bharat',
+    competencyId: 'tech_sql_databases',
+    level: 2,
+    durationHours: 12.0,
+    modulesCount: 6,
+    karmayogiCredits: 160,
+    rating: 4.7,
+    reviewsCount: 2200,
+    thumbnailIcon: 'Database',
+    tags: ['SQL', 'PostgreSQL', 'Data Warehouse', 'ETL', 'Indexing'],
+    overview: 'Master SQL queries, schema design, table indexing, joins across multi-million row survey databases, and automated ETL workflows in PostgreSQL.',
+    syllabus: [
+      'Relational Database Concepts for Survey Microdata',
+      'Complex Queries: Aggregations, Window Functions, and CTEs',
+      'Query Optimization and Indexing on Gigabyte-scale Survey Tables',
+      'Extract, Transform, Load (ETL) Data Pipelines for MoSPI Portals'
+    ]
+  },
+  {
+    id: 'igot_tech_204',
+    code: 'IGOT-TECH-004',
+    title: 'QGIS & Geospatial Analysis for Primary Sampling Units (PSUs)',
+    provider: 'Survey of India & MoSPI SDRD',
+    competencyId: 'tech_gis_spatial',
+    level: 2,
+    durationHours: 14.0,
+    modulesCount: 7,
+    karmayogiCredits: 190,
+    rating: 4.8,
+    reviewsCount: 1250,
+    thumbnailIcon: 'MapPin',
+    tags: ['GIS', 'QGIS', 'Spatial', 'PSU', 'Census Wards', 'Shapefiles'],
+    overview: 'Practical use of open-source QGIS to digitize Enumeration Blocks (EBs), inspect spatial coverage, integrate satellite imagery, and generate thematic district-level maps.',
+    syllabus: [
+      'Geographic Information Systems (GIS) Fundamentals for Statisticians',
+      'Handling Government Geospatial Data: Shapefiles, GeoJSON, GeoTIFF',
+      'Delineating Primary Sampling Units (PSUs) & Urban Frame Survey (UFS) Blocks',
+      'Spatial Joins between Survey Estimates and District Boundaries',
+      'Generating High-Resolution Thematic Maps for Ministry Reports'
+    ]
+  },
+  {
+    id: 'igot_tech_205',
+    code: 'IGOT-TECH-005',
+    title: 'Interactive Dashboards & Data Visualization for Official Reports',
+    provider: 'Karmayogi Bharat & Ministry of Electronics & IT (MeitY)',
+    competencyId: 'tech_data_viz',
+    level: 3,
+    durationHours: 12.0,
+    modulesCount: 6,
+    karmayogiCredits: 160,
+    rating: 4.7,
+    reviewsCount: 2800,
+    thumbnailIcon: 'BarChart3',
+    tags: ['Power BI', 'Data Visualization', 'Dashboards', 'Storytelling'],
+    overview: 'Build compelling visual dashboards for executive leadership, parliamentarians, and citizens using Power BI, interactive charts, and accessible design principles.',
+    syllabus: [
+      'Principles of Visual Data Storytelling in Public Policy',
+      'Designing Executive Dashboards with Key Performance Indicators (KPIs)',
+      'Creating Interactive Slicers, Drill-Downs, and Geo-maps',
+      'Exporting High-Resolution Charts for National Statistical Publications'
+    ]
+  },
+  {
+    id: 'igot_tech_206',
+    code: 'IGOT-TECH-006',
+    title: 'Applied AI & Machine Learning for Automated Survey Classification',
+    provider: 'DIID - MoSPI & MeitY AI Pehchan Initiative',
+    competencyId: 'tech_ai_ml',
+    level: 3,
+    durationHours: 18.0,
+    modulesCount: 9,
+    karmayogiCredits: 260,
+    rating: 4.9,
+    reviewsCount: 1400,
+    thumbnailIcon: 'Cpu',
+    tags: ['AI', 'Machine Learning', 'NLP', 'NIC Classification', 'Anomaly Detection'],
+    overview: 'Deploy NLP classifiers to automatically assign 5-digit NIC codes from economic activity text descriptions, detect survey fraud/anomalies, and impute missing data.',
+    syllabus: [
+      'Role of AI/ML in Modernizing Official Statistical Systems',
+      'Text Preprocessing and Embeddings for Vernacular Job Descriptions',
+      'Supervised NLP Classification for NIC-2008 and NCO-2015 Coding',
+      'Unsupervised Outlier & Fraud Detection in Field Enumeration Returns',
+      'Machine Learning Imputation for Missing Survey Data'
+    ]
+  },
+  {
+    id: 'igot_tech_207',
+    code: 'IGOT-TECH-007',
+    title: 'Cloud Architecture, Open Data APIs & Secure Microdata Dissemination',
+    provider: 'DIID - MoSPI & NIC MeghRaj Team',
+    competencyId: 'tech_cloud_apis',
+    level: 3,
+    durationHours: 12.0,
+    modulesCount: 6,
+    karmayogiCredits: 170,
+    rating: 4.8,
+    reviewsCount: 620,
+    thumbnailIcon: 'Cloud',
+    tags: ['Cloud', 'APIs', 'MeghRaj', 'Open Data', 'Microdata Portal'],
+    overview: 'Architecting scalable cloud dissemination pipelines on MeghRaj Government Cloud, RESTful APIs for statistical data consumers, and automated microdata masking.',
+    syllabus: [
+      'MeghRaj Cloud Infrastructure & Containerized Services (Docker/Kubernetes)',
+      'Designing Secure REST APIs for MoSPI Data Dissemination',
+      'Statistical Disclosure Control (SDC) & Microdata Anonymization Algorithms',
+      'Monitoring API Performance and Secure Gateway Integration'
+    ]
+  },
+
+  // --- DIGITAL GOVERNANCE MODULES ---
+  {
+    id: 'igot_gov_301',
+    code: 'IGOT-GOV-001',
+    title: 'Government Cybersecurity Essentials & CERT-In Compliance for MoSPI',
+    provider: 'CERT-In & Ministry of Home Affairs (I4C)',
+    competencyId: 'gov_cybersecurity',
+    level: 2,
+    durationHours: 8.0,
+    modulesCount: 4,
+    karmayogiCredits: 100,
+    rating: 4.8,
+    reviewsCount: 5400,
+    thumbnailIcon: 'Lock',
+    tags: ['Cybersecurity', 'CERT-In', '2FA', 'CAPI Security', 'Incident Response'],
+    overview: 'Essential cyber hygiene for government officials: safeguarding CAPI survey tablets, handling classified statistical data, avoiding phishing, and reporting security incidents.',
+    syllabus: [
+      'Cyber Threat Landscape for Government Statistical Portals',
+      'Password Hygiene, Two-Factor Authentication, and VPN Usage',
+      'Securing Field Tablets and Android CAPI Devices',
+      'CERT-In Mandatory Reporting Guidelines and Incident Containment'
+    ]
+  },
+  {
+    id: 'igot_gov_302',
+    code: 'IGOT-GOV-002',
+    title: 'Digital Personal Data Protection (DPDP) Act 2023 & Statistical Confidentiality',
+    provider: 'Ministry of Law & Justice and Karmayogi Bharat',
+    competencyId: 'gov_data_privacy',
+    level: 3,
+    durationHours: 10.0,
+    modulesCount: 5,
+    karmayogiCredits: 140,
+    rating: 4.9,
+    reviewsCount: 3800,
+    thumbnailIcon: 'FileKey',
+    tags: ['DPDP Act', 'Data Privacy', 'Statistics Act 2008', 'Respondent Confidentiality'],
+    overview: 'Key provisions of the DPDP Act 2023 and the Collection of Statistics Act 2008: legal obligations of data fiduciaries, respondent rights, anonymization, and penalties.',
+    syllabus: [
+      'Overview of Digital Personal Data Protection Act 2023',
+      'Exemptions for Research, Statistical, and Archival Purposes',
+      'Respondent Consent, Anonymity, and Pseudonymization Protocols',
+      'Cross-Border Data Transfer Rules and Penalties for Breaches'
+    ]
+  },
+  {
+    id: 'igot_gov_303',
+    code: 'IGOT-GOV-003',
+    title: 'Digital Public Infrastructure (DPI) & India Stack for E-Governance',
+    provider: 'MeitY & Karmayogi Bharat',
+    competencyId: 'gov_dpi_cloud',
+    level: 2,
+    durationHours: 8.0,
+    modulesCount: 4,
+    karmayogiCredits: 110,
+    rating: 4.7,
+    reviewsCount: 4200,
+    thumbnailIcon: 'Layers',
+    tags: ['DPI', 'India Stack', 'Aadhaar', 'DigiLocker', 'E-Sign'],
+    overview: 'Leveraging India’s Digital Public Infrastructure (DPI) layers—Aadhaar, DigiLocker, UPI, and Consent Framework—to streamline administrative and survey registers.',
+    syllabus: [
+      'Architecture of India Stack: Identity, Payments, Data layers',
+      'DigiLocker Integration for Official Credentials',
+      'Using Administrative Registers to Supplement National Surveys',
+      'Digital Public Goods Principles and Open Standards'
+    ]
+  },
+  {
+    id: 'igot_gov_304',
+    code: 'IGOT-GOV-004',
+    title: 'e-Office 7.0 Mastery: File Management, DSC & Paperless Administration',
+    provider: 'NIC & Department of Administrative Reforms (DARPG)',
+    competencyId: 'gov_eoffice_workflows',
+    level: 3,
+    durationHours: 6.0,
+    modulesCount: 3,
+    karmayogiCredits: 80,
+    rating: 4.8,
+    reviewsCount: 6700,
+    thumbnailIcon: 'FileSpreadsheet',
+    tags: ['e-Office', 'DSC', 'FMS', 'KMS', 'DARPG'],
+    overview: 'End-to-end operation of e-Office: electronic file creation, green noting, draft approvals, Digital Signature Certificates (DSC), and RTI file handling.',
+    syllabus: [
+      'e-File Navigation: Receipts, Noting, Referencing, and Annexures',
+      'Applying Digital Signature Certificates (DSC) & e-Sign',
+      'Knowledge Management System (KMS) & Collaborative Drafting',
+      'File Tracking, Movement Registers, and Audit Trails'
+    ]
+  },
+
+  // --- BEHAVIOURAL & MANAGERIAL MODULES ---
+  {
+    id: 'igot_mgmt_401',
+    code: 'IGOT-MGMT-001',
+    title: 'Civil Service Conduct Rules & Ethics in Official Statistics',
+    provider: 'Institute of Secretariat Training & Management (ISTM)',
+    competencyId: 'mgmt_ethics_conduct',
+    level: 3,
+    durationHours: 8.0,
+    modulesCount: 4,
+    karmayogiCredits: 100,
+    rating: 4.9,
+    reviewsCount: 8200,
+    thumbnailIcon: 'Scale',
+    tags: ['Ethics', 'Conduct Rules 1964', 'Public Trust', 'Impartiality'],
+    overview: 'CCS (Conduct) Rules 1964 and UN Fundamental Principles of Official Statistics: maintaining professional independence, avoiding conflicts of interest, and public trust.',
+    syllabus: [
+      'Central Civil Services (Conduct) Rules 1964: Core Tenets',
+      'UN Fundamental Principles of Official Statistics & Integrity',
+      'Preventing Data Manipulation & Safeguarding Public Credibility',
+      'Handling Whistleblower Reports and Anti-Corruption Measures'
+    ]
+  },
+  {
+    id: 'igot_mgmt_402',
+    code: 'IGOT-MGMT-002',
+    title: 'Survey Project Management & Multidisciplinary Field Team Leadership',
+    provider: 'IIM Bangalore & MoSPI NSSTA',
+    competencyId: 'mgmt_project_management',
+    level: 3,
+    durationHours: 12.0,
+    modulesCount: 6,
+    karmayogiCredits: 160,
+    rating: 4.8,
+    reviewsCount: 1540,
+    thumbnailIcon: 'Briefcase',
+    tags: ['Project Management', 'Field Monitoring', 'Timeline Planning', 'Budgeting'],
+    overview: 'Managing large-scale national surveys: Gantt charts, field supervisor inspection cycles, contingency planning during extreme weather, and budget utilization.',
+    syllabus: [
+      'Survey Lifecycle Management: Planning to Dissemination',
+      'Budget Estimation and Financial Sanctions in Government Surveys',
+      'Monitoring Field Progress via Real-Time CAPI Dashboards',
+      'Managing Conflict and Motivation in Distributed Field Teams'
+    ]
+  },
+  {
+    id: 'igot_mgmt_403',
+    code: 'IGOT-MGMT-003',
+    title: 'Evidence-Based Policy Briefing: Translating Statistics into Governance Action',
+    provider: 'LBSNAA Mussoorie & NITI Aayog',
+    competencyId: 'mgmt_communication_briefs',
+    level: 3,
+    durationHours: 10.0,
+    modulesCount: 5,
+    karmayogiCredits: 140,
+    rating: 4.9,
+    reviewsCount: 1980,
+    thumbnailIcon: 'FileText',
+    tags: ['Policy Brief', 'Communication', 'NITI Aayog', 'Parliamentary Questions'],
+    overview: 'Crafting concise, high-impact policy briefs from complex survey tabulations for Ministers, Parliamentary Committees, and NITI Aayog.',
+    syllabus: [
+      'Understanding the Needs of Senior Policymakers',
+      'Structuring the Policy Brief: Context, Evidence, Policy Options',
+      'Answering Parliamentary Questions (Starred / Unstarred) with Precision',
+      'Media Communication and Handling Statistical Fact-Checks'
+    ]
+  },
+  {
+    id: 'igot_mgmt_404',
+    code: 'IGOT-MGMT-004',
+    title: 'Strategic Leadership & Change Management for Senior Statistical Officers',
+    provider: 'LBSNAA Mussoorie & Karmayogi Bharat',
+    competencyId: 'mgmt_leadership_change',
+    level: 4,
+    durationHours: 14.0,
+    modulesCount: 7,
+    karmayogiCredits: 190,
+    rating: 4.8,
+    reviewsCount: 1210,
+    thumbnailIcon: 'Award',
+    tags: ['Leadership', 'Change Management', 'Digital Transformation', 'Vision'],
+    overview: 'Guiding institutional transformation in MoSPI: moving from traditional paper-and-pencil surveys to fully digital AI-assisted data ecosystems.',
+    syllabus: [
+      'Kotter’s 8-Step Change Framework in Public Institutions',
+      'Overcoming Resistance to Technological Modernization',
+      'Fostering Cross-Division Collaboration between FOD, NAD, and DIID',
+      'Building High-Performance Statistical Cadres'
+    ]
+  }
+];
